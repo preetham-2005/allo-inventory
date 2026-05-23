@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Product {
+  id               String              @id @default(cuid())
+  name             String
+  sku              String              @unique
+  inventory        Int                 @default(0)
+  reservationItems ReservationItem[]
+  createdAt        DateTime            @default(now())
+}
+
+model Reservation {
+  id               String              @id @default(cuid())
+  status           String              @default("pending")
+  items            ReservationItem[]
+  confirmedAt      DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+}
+
+model ReservationItem {
+  id            String      @id @default(cuid())
+  reservationId String
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity      Int
+  createdAt     DateTime    @default(now())
+
+  @@unique([reservationId, productId])
+}
