@@ -1,26 +1,141 @@
 @import "tailwindcss";
 
+/* Enable dark mode with selector strategy */
+:root {
+  color-scheme: light;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #171717;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+}
+
+html.dark {
+  color-scheme: dark;
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --border-color: #334155;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Dark mode styles for main elements */
+html.dark div {
+  --tw-bg-opacity: 1;
+}
+
+html.dark .bg-gradient-to-br {
+  background-image: linear-gradient(135deg, #0f172a 0%, #000000 100%);
+}
+
+html.dark .bg-white\/50 {
+  background-color: rgba(30, 41, 59, 0.5);
+}
+
+html.dark .border-slate-200 {
+  border-color: #334155;
+}
+
+html.dark .bg-slate-900\/30 {
+  background-color: rgba(15, 23, 42, 0.3);
+}
+
+html.dark .text-slate-600 {
+  color: #cbd5e1;
+}
+
+html.dark .bg-slate-50 {
+  background-color: #0f172a;
+}
+
+html.dark .bg-slate-100 {
+  background-color: #1e293b;
+}
+
+html.dark .bg-blue-50 {
+  background-color: #0f172a;
+}
+
+html.dark .bg-green-50 {
+  background-color: #0f172a;
+}
+
+html.dark .from-blue-600,
+html.dark .to-blue-700 {
+  color: #60a5fa;
+}
+
+html.dark .text-slate-900 {
+  color: #f1f5f9;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(148 163 184);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(100 116 139);
+}
+
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(71 85 105);
+}
+
+html.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(51 65 85);
+}
+
+/* Smooth animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Product card hover effects */
+@layer components {
+  .product-card {
+    @apply transition-all duration-300 hover:shadow-xl;
+  }
+
+  .warehouse-item {
+    @apply transition-all duration-200 hover:border-blue-300;
+  }
 }

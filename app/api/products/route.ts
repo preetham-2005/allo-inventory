@@ -8,22 +8,38 @@ export async function GET(request: NextRequest) {
     await cleanupExpiredReservations();
 
     const products = await prisma.product.findMany({
-      select: {
-        id: true,
-        name: true,
-        sku: true,
-        inventory: true,
-        createdAt: true,
+      include: {
+        stock: {
+          include: {
+            warehouse: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
 
+    // Transform to include available units per warehouse
+    const transformedProducts = products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      sku: product.sku,
+      createdAt: product.createdAt,
+      warehouses: product.stock.map((s) => ({
+        warehouseId: s.warehouse.id,
+        warehouseName: s.warehouse.name,
+        location: s.warehouse.location,
+        totalUnits: s.totalUnits,
+        reservedUnits: s.reservedUnits,
+        availableUnits: s.totalUnits - s.reservedUnits,
+      })),
+    }));
+
     return NextResponse.json(
       {
         success: true,
-        products,
+        products: transformedProducts,
       },
       { status: 200 }
     );

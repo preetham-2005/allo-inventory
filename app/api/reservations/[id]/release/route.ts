@@ -1,5 +1,5 @@
 import { cleanupExpiredReservations } from '@/lib/cleanup';
-import { confirmReservation } from '@/lib/reservation';
+import { releaseReservation } from '@/lib/reservation';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(
@@ -19,26 +19,21 @@ export async function POST(
       );
     }
 
-    const reservation = await confirmReservation(id);
+    const reservation = await releaseReservation(id);
 
     return NextResponse.json(
       {
         success: true,
-        message: 'Reservation confirmed successfully',
+        message: 'Reservation released successfully',
         reservation,
       },
       { status: 200 }
     );
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : 'Failed to confirm reservation';
+      error instanceof Error ? error.message : 'Failed to release reservation';
 
-    // Return 410 Gone if reservation has expired
-    if ((error as any)?.code === 'EXPIRED_410') {
-      return NextResponse.json({ error: message }, { status: 410 });
-    }
-
-    console.error('Error confirming reservation:', error);
+    console.error('Error releasing reservation:', error);
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }

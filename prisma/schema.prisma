@@ -12,18 +12,45 @@ model Product {
   id               String              @id @default(cuid())
   name             String
   sku              String              @unique
-  inventory        Int                 @default(0)
+  stock            Stock[]
   reservationItems ReservationItem[]
   createdAt        DateTime            @default(now())
 }
 
+model Warehouse {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  location  String
+  stock     Stock[]
+  createdAt DateTime @default(now())
+}
+
+model Stock {
+  id                 String              @id @default(cuid())
+  productId          String
+  product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouseId        String
+  warehouse          Warehouse           @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  totalUnits         Int                 @default(0)
+  reservedUnits      Int                 @default(0)
+  reservationItems   ReservationItem[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@unique([productId, warehouseId])
+  @@index([productId])
+  @@index([warehouseId])
+}
+
 model Reservation {
-  id               String              @id @default(cuid())
-  status           String              @default("pending")
-  items            ReservationItem[]
-  confirmedAt      DateTime?
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
+  id                String              @id @default(cuid())
+  status            String              @default("pending") // pending, confirmed, released, expired
+  items             ReservationItem[]
+  expiresAt         DateTime
+  confirmedAt       DateTime?
+  releasedAt        DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
 }
 
 model ReservationItem {
@@ -32,8 +59,12 @@ model ReservationItem {
   reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
   productId     String
   product       Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  stockId       String
+  stock         Stock       @relation(fields: [stockId], references: [id], onDelete: Cascade)
   quantity      Int
   createdAt     DateTime    @default(now())
 
-  @@unique([reservationId, productId])
+  @@unique([reservationId, stockId])
+  @@index([reservationId])
+  @@index([stockId])
 }
